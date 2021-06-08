@@ -18,7 +18,7 @@ if __name__ == '__main__':
     seed = set_seed(config.get('seed'))
 
     # Read the dataset
-    x_data, y_data = read_h5_files('archives/' + config.get('archive') + '/data.h5')
+    x_data, y_data = read_h5_files('../archives/' + config.get('archive') + '/data.h5')
 
     # Set the number of classes, the batch size, and the input shape dynamically
     n_classes = len(np.unique(y_data))

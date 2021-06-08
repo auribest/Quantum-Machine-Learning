@@ -40,7 +40,7 @@ def read_hyperparameters_from_json():
     print('\n## Hyperparameters are being read from JSON\n')
 
     # Open JSON file, load general hyperparameters and close file
-    hf = open(os.path.join('Pennylane/config.json'), 'r')
+    hf = open(os.path.join('config.json'), 'r')
     config = json.load(hf)
     hf.close()
 
