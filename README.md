@@ -8,6 +8,14 @@
 
 ### Execution from root folder ('Quantencomputing/'):
 
-**Microsoft QDK:**  ``python3 QDK/main.py``
+**Microsoft QDK:**
 
-**Pennylane**:      ``python3 Pennylane/main.py``
+``cd QDK/``
+
+``python3 main.py``
+
+**Pennylane**:
+
+``cd Pennylane/``
+
+``python3 main.py``
