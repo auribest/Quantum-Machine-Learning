@@ -1,11 +1,13 @@
 import os
 import random
-from random import randint
 import torch
 import numpy as np
 import json
 import h5py
+import torch.nn as nn
+from random import randint
 from sklearn.preprocessing import StandardScaler
+from tqdm import tqdm
 
 
 def read_h5_files(data_raw_path):
@@ -74,7 +76,33 @@ def set_seed(seed):
     return seed
 
 
+def create_directory(directory_path):
+    """
+    Creates a given directory path if it doesn't yet exist.
+
+    :param directory_path: (str) Path to be created.
+    :return: (str) Directory.
+    """
+    # If path already exists do nothing, else create it
+    if os.path.exists(directory_path):
+        return None
+    else:
+        try:
+            os.makedirs(directory_path)
+        except:
+            # In case another machine created the path meanwhile
+            return None
+
+        return directory_path
+
+
 def normalize_data(raw_data):
+    """
+    Normalizes input data via Z-Score normalization.
+
+    :param raw_data: (nd-array) Raw input data.
+    :return: (nd-array) Normalized data.
+    """
     print('## Data is being normalized\n')
 
     transform = StandardScaler()
@@ -84,6 +112,12 @@ def normalize_data(raw_data):
 
 
 def show_distribution(dataset, labels):
+    """
+    Show the class distribution.
+
+    :param dataset: (Torch Dataloader) Input samples.
+    :param labels: (nd-array) Input labels.
+    """
     print('## Train set class distribution:\n')
 
     total = 0
@@ -106,8 +140,119 @@ def show_distribution(dataset, labels):
 
 
 def get_device():
+    """
+    Set host training device.
+
+    :return: (Torch device) Host device.
+    """
     if torch.cuda.is_available():
         device = torch.device('cuda:0')
     else:
         device = torch.device('cpu')
     return device
+
+
+def train(write_path, model, optimizer, criterion, train_loader, val_loader, n_epochs, start_epoch=0):
+    """
+    The train function.
+
+    :param write_path: (String) Path to save the model.
+    :param model: (Torch Model) The model to be trained.
+    :param optimizer: (Torch Optimizer) The optimizer used for training.
+    :param criterion: (Torch Loss) Loss used for training.
+    :param train_loader: (Torch Dataloader) Input training samples.
+    :param val_loader: (Torch Dataloader) Input validation samples.
+    :param n_epochs: (Integer) Number of epochs.
+    :param start_epoch: (Integer) The starting epoch (default is 0).
+    """
+    print(f"Training Model...")
+
+    for epoch in range(n_epochs):
+        print(f"Epoch [{epoch + start_epoch + 1}/{n_epochs + start_epoch}]")
+        train_loss = 0.0
+        model.train()   # Set model to training mode (only necessary if special layers are used)
+
+        for index, data in tqdm(enumerate(train_loader), total=len(train_loader)):
+            samples, labels = data
+            # TODO: Move data here to GPU if available (Optional)
+
+            # Forward
+            output = model(samples.float())     # Later transform to float not necessary if used own Dataset
+            loss = criterion(output, labels)
+
+            # Backward
+            optimizer.zero_grad()
+            loss.backward()
+
+            # Gradient descent or adam step
+            optimizer.step()
+
+            # Calculate loss for statistics
+            train_loss = loss.item() * samples.size(0)
+
+        val_loss = 0.0
+        # Set model to evaluation mode, only necessary if special layers are used
+        model.eval()
+
+        for index, valData in tqdm(enumerate(val_loader), total=len(val_loader)):
+            samples, labels = valData
+            # TODO: Move data here to GPU if available (Optional)
+
+            output = model(samples.float())
+            loss = criterion(output, labels)
+            val_loss = loss.item() * samples.size(0)
+
+        print(f'Results for Epoch {epoch + 1} \t\t Training Loss: {train_loss / len(train_loader)}'
+              f' \t\t Validation Loss: {val_loss / len(val_loader)}')
+        print('\n')
+
+    # Save the model state as .pt file
+    state = {'epoch': n_epochs, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}
+    torch.save(state, write_path + 'model_sate.pt')
+
+
+def check_accuracy(model, test_loader):
+    """
+    The test function.
+
+    :param model: (Torch Model) The trained model to be tested.
+    :param test_loader: (Torch Dataloader) Input test samples.
+    """
+    num_correct = 0
+    num_samples = 0
+
+    with torch.no_grad():
+        # for samples, labels in test_loader:
+        print(f"Testing Model...")
+
+        for index, data in tqdm(enumerate(test_loader), total=len(test_loader)):
+            samples, labels = data
+            # TODO: Move data here to GPU if available (Optional)
+
+            output = model(samples.float())
+            _, predictions = output.max(1)
+            num_correct += (predictions == labels).sum().item()
+            num_samples += predictions.size(0)
+
+        print(
+            f"Got {num_correct} / {num_samples} "
+            f"with accuracy {float(num_correct) / float(num_samples) * 100:.2f} %"
+        )
+        print('\n')
+
+
+def load_checkpoint(model, optimizer, state_path):
+    """
+    Load a pretrained model from it's saved states and it's optimizer states.
+
+    :return: (Tuple) Model states.
+    """
+    print("=> loading checkpoint '{}'".format(state_path))
+    checkpoint = torch.load(state_path)
+    start_epoch = checkpoint['epoch']
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
+
+    print("=> loaded checkpoint '{}' (epoch {})\n".format(state_path, checkpoint['epoch']))
+
+    return model, start_epoch, optimizer
