@@ -106,7 +106,7 @@ if __name__ == '__main__':
         # Load the model states and number of epochs (ignore the old optimizer because it has to be re-initialized)
         model, start_epoch, old_optimizer = load_checkpoint(model, optimizer, write_path + 'model_sate.pt')
 
-        print("## Hidden layer are being frozen\n")
+        print("## Hidden layers are being frozen\n")
         # Freeze the hidden layers
         for param in model.parameters():
             param.requires_grad = False
