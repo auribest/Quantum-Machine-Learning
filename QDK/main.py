@@ -17,11 +17,18 @@ from Microsoft.Quantum.Samples import (
 if __name__ == "__main__":
     # with open('../archives/HalfMoon/data.json') as f:
     #     data = json.load(f)
-    data = np.array()
+    data = {}
+    data['TrainingData'] = {}
+    data['ValidationData'] = {}
+    splitpercetage = 80
     with open('../archives/HalfMoon/halfmoon_1000_data.npy', 'rb') as f:
-        data['TrainingData'] = np.load(f)
+        nparr = np.load(f)
+        data['TrainingData']['Features'] = nparr[:len(nparr)*splitpercetage]
+        data['ValidationData']['Features'] = nparr[len(nparr)*splitpercetage:]
     with open('../archives/HalfMoon/halfmoon_1000_label.npy', 'rb') as f:
-        data['ValidationData'] = np.load(f)
+        nparr = np.load(f)
+        data['TrainingData']['Labels'] = nparr[:len(nparr)*splitpercetage]
+        data['ValidationData']['Labels'] = nparr[len(nparr)*splitpercetage:]
 
     parameter_starting_points = [
         [0.060057, 3.00522,  2.03083,  0.63527,  1.03771, 1.27881, 4.10186,  5.34396],
