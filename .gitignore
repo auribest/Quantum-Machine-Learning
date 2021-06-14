@@ -7,6 +7,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Ignore results
+results/*
+
+# QSharp
+*/obj/*
+
+# Numpy Datasets
+*.npy
+
 # C extensions
 *.so
 
