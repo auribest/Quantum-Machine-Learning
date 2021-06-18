@@ -54,6 +54,7 @@ class net(nn.Module):
 
 # Initialize network
 my_net = net()
+my_net.to(device)
 print(my_net)
 
 # Method to print the weights of the layer
