@@ -64,8 +64,8 @@ namespace Microsoft.Quantum.Samples {
                 w/ Tolerance <- 0.005
                 w/ NMeasurements <- 10000
                 w/ MaxEpochs <- 10
-                w/ ScoringPeriod <- 1
-                w/ VerboseMessage <- Message,
+                w/ ScoringPeriod <- 1,
+                // w/ VerboseMessage <- Message,
             DefaultSchedule(trainingVectors),
             DefaultSchedule(trainingVectors)
         );

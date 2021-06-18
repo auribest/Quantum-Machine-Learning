@@ -3,7 +3,9 @@ import torch
 import json
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 import numpy as np
+from prettytable import PrettyTable
 from datetime import datetime
 from torch.utils.data import Dataset, TensorDataset
 from tqdm import tqdm  # For Loading Bars
@@ -12,7 +14,7 @@ batch_size = 15
 num_epochs = 10
 
 # TODO: make sure to use the correct path
-dataJson = json.load(open('../archives/HalfMoon/data_1000.json', 'r'))
+dataJson = json.load(open('../archives/HalfMoon/data_1000_0.3.json', 'r'))
 train_features = pandas.DataFrame(dataJson['TrainingData']['Features'])
 train_labels = pandas.DataFrame(dataJson['TrainingData']['Labels'])
 val_features = pandas.DataFrame(dataJson['ValidationData']['Features'])
@@ -38,21 +40,35 @@ class net(nn.Module):
     def __init__(self):
         super(net, self).__init__()
         self.fc1 = nn.Linear(2, 2)
-        #self.fc2 = nn.Linear(60, 2)
-        #self.fl = nn.Flatten()  # example: von [100, 5, 127] auf [100, 635]
+        #self.fc2 = nn.Linear(2, 2)
 
     def forward(self, x):
+        x = F.relu(x)
         x = self.fc1(x)
-        # x = F.relu()
-        # x = F.relu(self.fc2(x))
-        #x = self.fl(x)
+
+        #x = F.relu(x)
+        #x = self.fc2(x)
 
         return x
 
 
 # Initialize network
 my_net = net()
-# print(my_net)
+print(my_net)
+
+# Method to print the weights of the layer
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad: continue
+        param = parameter.numel()
+        table.add_row([name, param])
+        total_params+=param
+    print(table)
+    print(f"Total Trainable Params: {total_params}")
+    return total_params
+count_parameters(my_net)
 
 # loss and optimizer
 criterion = nn.CrossEntropyLoss()  # already uses softmax so not needed in forward

@@ -1,6 +1,8 @@
 import json
 from json import JSONEncoder
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import LabelEncoder
 from sklearn.datasets import make_moons
@@ -10,8 +12,18 @@ from sklearn.datasets import make_moons
 # if shuffle is False the data contains all values of class 0 first and then all values of class 1 ...
 numbersamples = 1000
 seed = 1
-data = make_moons(n_samples=numbersamples, noise=0.275, random_state=seed)
+noise = 0.3
+data = make_moons(n_samples=numbersamples, noise=noise, random_state=seed)
 print("moons length: %d entries: %d" % (len(data), len(data[0])))
+
+# Plotting the half_moon data
+X, y = data
+
+sns.scatterplot(
+    x=X[:, 0], y=X[:, 1], hue=y,
+    marker='o', s=25, edgecolor='k', legend=False
+).set_title("Data")
+plt.show()
 
 # Get samples and labels from data
 x_data = data[0]
@@ -28,7 +40,7 @@ val_data = [], []
 test_data = [], []
 
 # Initialize shuffle-split (for the train and validation data)
-sss1 = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=seed)
+sss1 = StratifiedShuffleSplit(n_splits=1, test_size=0.75, random_state=seed)
 
 # Shuffle and split into train data and validation data
 for train_index, val_index in sss1.split(data, labels):
@@ -78,5 +90,5 @@ jsonData = {
                     }
             }
 
-with open('archives/HalfMoon/data_' + str(numbersamples) + '.json', 'w+') as outfile:
+with open('archives/HalfMoon/data_' + str(numbersamples) + '_' + str(noise) + '.json', 'w+') as outfile:
     json.dump(jsonData, outfile)
