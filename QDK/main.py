@@ -16,7 +16,7 @@ from Microsoft.Quantum.Samples import (
 
 
 if __name__ == "__main__":
-    with open('../archives/HalfMoon/data_500_0.3.json') as f:
+    with open('../archives/HalfMoon/data_1000_0.3.json') as f:
          data = json.load(f)
 
     parameter_starting_points = [
