@@ -5,6 +5,7 @@ import numpy as np
 import json
 import h5py
 import torch.nn as nn
+import matplotlib.pyplot as plt
 from random import randint
 from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
@@ -167,11 +168,20 @@ def train(write_path, model, optimizer, criterion, train_loader, val_loader, n_e
     """
     print(f"Training Model...")
 
+    # keeping training loss and validation loss for later plotting
+    validation_loss_vals = []
+    train_loss_vals = []
+
+
     for epoch in range(n_epochs):
         print(f"Epoch [{epoch + start_epoch + 1}/{n_epochs + start_epoch}]")
+
+        # variable for saving training loss of this epoch
+
         train_loss = 0.0
         model.train()   # Set model to training mode (only necessary if special layers are used)
 
+        # for every batch
         for index, data in tqdm(enumerate(train_loader), total=len(train_loader)):
             samples, labels = data
             # TODO: Move data here to GPU if available (Optional)
@@ -187,7 +197,7 @@ def train(write_path, model, optimizer, criterion, train_loader, val_loader, n_e
             # Gradient descent or adam step
             optimizer.step()
 
-            # Calculate loss for statistics
+            # Calculate loss for statistics. Only the last batch's training loss is kept
             train_loss = loss.item() * samples.size(0)
 
         val_loss = 0.0
@@ -202,9 +212,29 @@ def train(write_path, model, optimizer, criterion, train_loader, val_loader, n_e
             loss = criterion(output, labels)
             val_loss = loss.item() * samples.size(0)
 
+        # save losses for this epoch
+        validation_loss_vals.append(val_loss/len(val_loader))
+        train_loss_vals.append(train_loss/len(train_loader))
+
         print(f'Results for Epoch {epoch + 1} \t\t Training Loss: {train_loss / len(train_loader)}'
               f' \t\t Validation Loss: {val_loss / len(val_loader)}')
         print('\n')
+
+    # plot results
+    if n_epochs != 2:
+        # we're training with the quantum layer
+        x_axis = [1, 2, 3, 4]
+        plt.plot(x_axis, validation_loss_vals, label='validation loss, quantum classifier')
+        plt.plot(x_axis, train_loss_vals, label='training loss, quantum classifier')
+    else:
+        # we're training after replacing the quantum layer
+        x_axis = [5, 6]
+        plt.plot(x_axis, validation_loss_vals, label='validation loss, linear classifier')
+        plt.plot(x_axis, train_loss_vals, label='training loss, linear classifier')
+
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.savefig('lossgraph.png')
 
     # Save the model state as .pt file
     state = {'epoch': n_epochs, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}

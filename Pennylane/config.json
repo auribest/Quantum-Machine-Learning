@@ -1,6 +1,6 @@
 {
   "__seed__": "Seed for reproducibility.",
-  "seed": null,
+  "seed": 5429914,
 
   "__archive__": "Name of the archive that shall be used for training.",
   "archive": "PowerQuality2",
