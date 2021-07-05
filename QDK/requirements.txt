@@ -1,0 +1,7 @@
+numpy==1.19.5
+matplotlib==3.4.1
+qsharp==0.17.2105.143879
+pandas==1.2.3
+torch==1.8.1
+prettytable==2.1.0
+tqdm==4.60.0
