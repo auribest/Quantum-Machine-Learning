@@ -1,0 +1,25 @@
+{
+  "__seed__": "Seed for reproducibility.",
+  "seed": null,
+
+  "__archive__": "Name of the archive that shall be used for training.",
+  "archive": "PowerQuality2",
+
+  "__architecture__": "Name of the architecture used for training ('quantum' or 'classic').",
+  "architecture": "quantum",
+
+  "__n_epochs__": "Number of epochs during training.",
+  "n_epochs": 4,
+
+  "__lr__": "Learning rate for model training.",
+  "lr": 0.001,
+
+  "__train_size__": "Amount of training data to be used during training in decimal, e.g. '0.6' (60%).",
+  "train_size": 0.6,
+
+  "__val_size__": "Amount of validation data to be used during training in decimal, e.g. '0.2' (20%).",
+  "val_size": 0.2,
+
+  "__test_size__": "Amount of test data to be used during training in decimal, e.g. '0.2' (20%).",
+  "test_size": 0.2
+}
