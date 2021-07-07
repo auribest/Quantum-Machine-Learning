@@ -17,7 +17,7 @@ Files: ``QDK/main.py`` and ``QDK/training.qs``
 
 Via JSON configuration file: ``Pennylane/config.json``
 
-## Execution from root folder ('Quantencomputing/'):
+## Execution from root folder ('Quantum-Machine-Learning/'):
 
 ***Execution must be from the specified folders below! Else libraries and paths won't be found.***
 
