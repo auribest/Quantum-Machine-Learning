@@ -1,3 +1,6 @@
+"""
+A simple linear neural network to compare against the quantum circuit classifier.
+"""
 import pandas
 import torch
 import json
