@@ -1,3 +1,6 @@
+"""
+Create and save a half-moon dataset.
+"""
 import json
 from json import JSONEncoder
 import numpy as np
