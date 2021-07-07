@@ -1,4 +1,4 @@
-# Quantencomputing
+# Quantum Machine Learning with Microsoft's QDK and Xanadu's Pennylane Libraries
 
 ## General
 
